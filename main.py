@@ -109,9 +109,14 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
     # Q 1.2
     def find_intrinsic(self):
+        # ref: https://docs.opencv.org/4.5.3/dc/dbb/tutorial_py_calibration.html
+        # only need "pattern" to find distortion matrix then the intrinsic matrix (camera matrix) will also appear
+        # so, the object points can use "pattern" form to describe the chess board
+
         objp = np.zeros((8 * 11, 3), np.float32)
         objp[:, :2] = np.mgrid[0:11, 0:8].T.reshape(-1, 2)
-        objpoints = [objp for _ in range(15)]
+        objpoints = [objp for _ in range(15)]   # 3d point in real world space
+
         ret, self.intrinsic_mtx, self.dist_coeffs, rvecs, tvecs = cv2.calibrateCamera(objpoints, self.corners,
                                                                                       self.img1[0].shape[:-1], None, None)
 
@@ -125,7 +130,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
     
     # Q 1.4
     def find_distortion(self):
-        print("Q 1_4 distortion Matrix:")
+        print("Q 1_4 distortion matrix:")
         print(self.dist_coeffs)
         print("------------------------------------------------\n")
     
