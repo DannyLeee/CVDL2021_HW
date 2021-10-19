@@ -60,6 +60,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             super().__init__()
             self.setupUi(self)
 
+            # link button click function
             self.Q1_1.clicked.connect(self.corner_detection)
             self.Q1_2.clicked.connect(self.find_intrinsic)
             self.Q1_3.clicked.connect(self.find_extrinsic)
@@ -73,12 +74,35 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             self.Q4_2.clicked.connect(self.keypoints_match)
             self.Q4_3.clicked.connect(self.warp)
 
+            # load image
+            self.img1 = []
+            for idx in range(1, 16):
+                self.img1 += [cv2.imread(f'Dataset/Q1_Image/{idx}.bmp')]
+
             self.img4_1 = cv2.imread('Dataset/Q4_Image/Shark1.jpg')
             self.img4_2 = cv2.imread('Dataset/Q4_Image/Shark2.jpg')
 
+
+
     # Q 1.1
     def corner_detection(self):
-        pass
+        # col or row numbers of corners
+        pattern_size = (8, 11)
+
+        for idx in range(0, 15):
+            img = self.img1[idx]
+            is_found, corners = cv2.findChessboardCorners(img, pattern_size)
+            cv2.drawChessboardCorners(img, pattern_size, corners, is_found)
+
+            win_name = "Q 4.1"
+            cv2.namedWindow(win_name, 0)
+            cv2.resizeWindow(win_name, 512, 512)
+            cv2.moveWindow(win_name, self.geometry().x() + 300, self.geometry().y())
+            cv2.imshow(win_name, img)
+            cv2.waitKey(500) # wait for 500 ms
+
+        cv2.waitKey(500)
+        cv2.destroyWindow(win_name)
 
     # Q 1.2
     def find_intrinsic(self):
