@@ -89,7 +89,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
     # Q 1.1
     def corner_detection(self):
         # col or row numbers of corners
-        pattern_size = (8, 11)
+        pattern_size = (11, 8)
 
         for idx in range(0, 15):
             img = self.img1[idx]
@@ -102,7 +102,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             cv2.resizeWindow(win_name, 512, 512)
             cv2.moveWindow(win_name, self.geometry().x() + 300, self.geometry().y())
             cv2.imshow(win_name, img)
-            cv2.waitKey(500) # wait for 500 ms
+            cv2.waitKey(500)    # wait for 500 ms
 
         cv2.waitKey(500)
         cv2.destroyWindow(win_name)
