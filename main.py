@@ -136,7 +136,26 @@ class Main(QMainWindow, ui.Ui_MainWindow):
     
     # Q 1.5
     def undistorted(self):
-        pass
+        for idx in range(0, 15):
+            img = self.img1[idx]
+            h, w = img.shape[:2]
+
+            new_camera_mtx, roi = cv2.getOptimalNewCameraMatrix(self.intrinsic_mtx, self.dist_coeffs, (w, h), 1, (w, h))
+
+            img_ = cv2.undistort(img, self.intrinsic_mtx, self.dist_coeffs, new_camera_mtx)
+
+            win_name = "Q 4.5"
+            cv2.namedWindow(win_name, 0)
+            cv2.resizeWindow(win_name, 1024, 512)
+            cv2.moveWindow(win_name, self.geometry().x() + 300, self.geometry().y())
+            result = np.zeros((h, w + w, 3), dtype="uint8")
+            result[0:h, 0:w] = img
+            result[0:h, w:] = img_
+            cv2.imshow(win_name, result)
+            cv2.waitKey(500)    # wait for 500 ms
+
+        cv2.waitKey(500)
+        cv2.destroyWindow(win_name)
 
     # Q 2.1
     def word_lie(self):
