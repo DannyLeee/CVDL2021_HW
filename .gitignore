@@ -1,0 +1,6 @@
+*.pdf
+*.pptx
+/Dataset
+*.sh
+__pycache__/
+/.idea/
