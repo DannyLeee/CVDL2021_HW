@@ -82,6 +82,8 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             self.img4_1 = cv2.imread('Dataset/Q4_Image/Shark1.jpg')
             self.img4_2 = cv2.imread('Dataset/Q4_Image/Shark2.jpg')
 
+            # global variable
+            self.corners = []   # Q1
 
 
     # Q 1.1
@@ -93,6 +95,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             img = self.img1[idx]
             is_found, corners = cv2.findChessboardCorners(img, pattern_size)
             cv2.drawChessboardCorners(img, pattern_size, corners, is_found)
+            self.corners += [corners]
 
             win_name = "Q 4.1"
             cv2.namedWindow(win_name, 0)
@@ -106,7 +109,15 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
     # Q 1.2
     def find_intrinsic(self):
-        pass
+        objp = np.zeros((8 * 11, 3), np.float32)
+        objp[:, :2] = np.mgrid[0:11, 0:8].T.reshape(-1, 2)
+        objpoints = [objp for _ in range(15)]
+        ret, self.intrinsic_mtx, self.dist_coeffs, rvecs, tvecs = cv2.calibrateCamera(objpoints, self.corners,
+                                                                                      self.img1[0].shape[:-1], None, None)
+
+        print("Q 1_2 intrinsic matrix:")
+        print(self.intrinsic_mtx)
+        print("------------------------------------------------\n")
 
     # Q 1.3
     def find_extrinsic(self):
@@ -114,7 +125,9 @@ class Main(QMainWindow, ui.Ui_MainWindow):
     
     # Q 1.4
     def find_distortion(self):
-        pass
+        print("Q 1_4 distortion Matrix:")
+        print(self.dist_coeffs)
+        print("------------------------------------------------\n")
     
     # Q 1.5
     def undistorted(self):
