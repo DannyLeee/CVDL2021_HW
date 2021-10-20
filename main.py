@@ -83,6 +83,9 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             for idx in range(1, 6):
                 self.img2 += [cv2.imread(f'Dataset/Q2_Image/{idx}.bmp')]
 
+            self.img3_L = cv2.imread('Dataset/Q3_Image/imL.png')
+            self.img3_R = cv2.imread('Dataset/Q3_Image/imR.png')
+
             self.img4_1 = cv2.imread('Dataset/Q4_Image/Shark1.jpg')
             self.img4_2 = cv2.imread('Dataset/Q4_Image/Shark2.jpg')
 
@@ -229,7 +232,19 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
     # Q 3.1
     def disparity_map(self):
-        pass
+        stereo_matcher = cv2.StereoBM_create(256)
+        img_L = cv2.cvtColor(self.img3_L, cv2.COLOR_BGR2GRAY)
+        img_R = cv2.cvtColor(self.img3_R, cv2.COLOR_BGR2GRAY)
+        h, w = img_L.shape[:2]
+        disparity = stereo_matcher.compute(img_L, img_R)
+
+        disparity = (disparity - disparity.min()) / (disparity.max() - disparity.min())    # min-max norm
+        self.disparity = disparity
+
+        win_name = "Q 3.1"
+        cv2.namedWindow(win_name, 0)
+        cv2.resizeWindow(win_name, int(w/4), int(h/4))
+        cv2.imshow(win_name, disparity)
 
     # Q 3.2
     def disparity_match(self):
@@ -253,7 +268,6 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         self.feature_2 = feature_2
         self.kps_1 = kps_1
         self.kps_2 = kps_2
-
 
     # Q 4.2
     def keypoints_match(self):
