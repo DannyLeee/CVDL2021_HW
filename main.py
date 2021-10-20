@@ -97,7 +97,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             cv2.drawChessboardCorners(img, pattern_size, corners, is_found)
             self.corners += [corners]
 
-            win_name = "Q 4.1"
+            win_name = "Q 1.1"
             cv2.namedWindow(win_name, 0)
             cv2.resizeWindow(win_name, 512, 512)
             cv2.moveWindow(win_name, self.geometry().x() + 300, self.geometry().y())
@@ -107,8 +107,6 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         cv2.waitKey(500)
         cv2.destroyWindow(win_name)
 
-    # Q 1.2
-    def find_intrinsic(self):
         # ref: https://docs.opencv.org/4.5.3/dc/dbb/tutorial_py_calibration.html
         # only need "pattern" to find distortion matrix then the intrinsic matrix (camera matrix) will also appear
         # so, the object points can use "pattern" form to describe the chess board
@@ -116,11 +114,12 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         objp = np.zeros((8 * 11, 3), np.float32)
         objp[:, :2] = np.mgrid[0:11, 0:8].T.reshape(-1, 2)
         objpoints = [objp for _ in range(15)]   # 3d point in real world space
+        _, self.intrinsic_mtx, self.dist_coeffs, self.rvecs, self.tvecs = \
+            cv2.calibrateCamera(objpoints, self.corners, self.img1[0].shape[:-1], None, None)
 
-        ret, self.intrinsic_mtx, self.dist_coeffs, self.rvecs, self.tvecs = cv2.calibrateCamera(objpoints, self.corners,
-                                                                                      self.img1[0].shape[:-1], None, None)
-
-        print("Q 1_2 intrinsic matrix:")
+    # Q 1.2
+    def find_intrinsic(self):
+        print("Q 1.2 intrinsic matrix:")
         print(self.intrinsic_mtx)
         print("------------------------------------------------\n")
 
@@ -132,16 +131,16 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
             R, _ = cv2.Rodrigues(self.rvecs[idx])
             result = np.append(R, self.tvecs[idx], axis=1)
-            print(f"Q 1_3 extrinsic matrix of image {idx + 1}")
+            print(f"Q 1.3 extrinsic matrix of image {idx + 1}")
             print(result)
             print("------------------------------------------------\n")
 
         except AssertionError:
-            print("Image index need to be 0 ~ 15")
+            print("Error: Image index need to be 0 ~ 15!")
 
     # Q 1.4
     def find_distortion(self):
-        print("Q 1_4 distortion matrix:")
+        print("Q 1.4 distortion matrix:")
         print(self.dist_coeffs)
         print("------------------------------------------------\n")
     
@@ -151,11 +150,9 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             img = self.img1[idx]
             h, w = img.shape[:2]
 
-            new_camera_mtx, roi = cv2.getOptimalNewCameraMatrix(self.intrinsic_mtx, self.dist_coeffs, (w, h), 1, (w, h))
+            img_ = cv2.undistort(img, self.intrinsic_mtx, self.dist_coeffs)
 
-            img_ = cv2.undistort(img, self.intrinsic_mtx, self.dist_coeffs, new_camera_mtx)
-
-            win_name = "Q 4.5"
+            win_name = "Q 1.5"
             cv2.namedWindow(win_name, 0)
             cv2.resizeWindow(win_name, 1024, 512)
             cv2.moveWindow(win_name, self.geometry().x() + 300, self.geometry().y())
@@ -239,14 +236,11 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
             cv2.line(vis, ptA, ptB, 256, 1)
 
-        print(matches)
-
         cv2.imshow("Q 4.2", vis)
 
     # Q 4.3
     def warp(self):
         # ref:https://blog.csdn.net/qq_36387683/article/details/98446442
-        # print(self.img4_1.shape)
 
         (hA, wA) = self.img4_2.shape[:2]
         (hB, wB) = self.img4_1.shape[:2]
