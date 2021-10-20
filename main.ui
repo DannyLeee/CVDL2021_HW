@@ -49,6 +49,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QPushButton" name="Q3_2">
+           <property name="text">
+            <string>3.2 Stereo Disparity Map</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </widget>

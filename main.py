@@ -69,7 +69,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             self.Q2_1.clicked.connect(self.word_lie)
             self.Q2_2.clicked.connect(self.word_stand)
             self.Q3_1.clicked.connect(self.disparity_map)
-            # self.Q3_2.clicked.connect(self.disparity_match)
+            self.Q3_2.clicked.connect(self.disparity_match)
             self.Q4_1.clicked.connect(self.find_keypoints)
             self.Q4_2.clicked.connect(self.keypoints_match)
             self.Q4_3.clicked.connect(self.warp)
@@ -246,9 +246,34 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         cv2.resizeWindow(win_name, int(w/4), int(h/4))
         cv2.imshow(win_name, disparity)
 
+    def mouse_click(self, event, x, y, flag, params):
+        # debug_log((event, x, y, flag, params))
+        B = 342.789
+        f = 4019.284
+        d = 279.184 # d? not sure
+        img_R = self.img3_R.copy()
+        if event == cv2.EVENT_LBUTTONDOWN:
+            debug_log((self.disparity[y][x]))
+            cv2.circle(img_R, (int(x-d*self.disparity[y][x]), y), 5, (0, 255, 0), 10)   # seems to be wrong
+            # cv2.circle(img_R, (x, y), 5, (0, 0, 255), 10)   # red point (left original point)
+            cv2.imshow("Right image", img_R)
+
     # Q 3.2
     def disparity_match(self):
-        pass
+        h, w = self.img3_L.shape[:2]
+
+        left_name = "Left image"
+        right_name = "Right image"
+        cv2.namedWindow(left_name, 0)
+        cv2.namedWindow(right_name, 0)
+        cv2.resizeWindow(left_name, int(w/4), int(h/4))
+        cv2.resizeWindow(right_name, int(w/4), int(h/4))
+        cv2.moveWindow(left_name, self.geometry().x(), self.geometry().y())
+        cv2.moveWindow(right_name, self.geometry().x()+int(w/4), self.geometry().y())
+        cv2.imshow(left_name, self.img3_L)
+        cv2.imshow(right_name, self.img3_R)
+        cv2.setMouseCallback(left_name, self.mouse_click)
+
 
     # Q 4.1
     def find_keypoints(self):
