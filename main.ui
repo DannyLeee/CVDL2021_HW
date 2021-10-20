@@ -64,21 +64,31 @@
           <x>20</x>
           <y>120</y>
           <width>160</width>
-          <height>98</height>
+          <height>127</height>
          </rect>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QLabel" name="label_2">
+          <widget class="QPushButton" name="Q2">
            <property name="text">
-            <string>Input Word</string>
+            <string>Get Camera Matrix</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLineEdit" name="tInput">
+          <widget class="QLabel" name="label_2">
            <property name="text">
-            <string/>
+            <string>Input Word:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="text_input">
+           <property name="text">
+            <string>OPENCV</string>
+           </property>
+           <property name="maxLength">
+            <number>6</number>
            </property>
           </widget>
          </item>

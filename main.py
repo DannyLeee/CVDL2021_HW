@@ -3,7 +3,6 @@ from PyQt5 import QtGui
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-
 import cv2
 import numpy as np
 
@@ -66,6 +65,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             self.Q1_3.clicked.connect(self.find_extrinsic)
             self.Q1_4.clicked.connect(self.find_distortion)
             self.Q1_5.clicked.connect(self.undistorted)
+            self.Q2.clicked.connect(self.get_cam_mtx)
             self.Q2_1.clicked.connect(self.word_lie)
             self.Q2_2.clicked.connect(self.word_stand)
             self.Q3_1.clicked.connect(self.disparity_map)
@@ -78,6 +78,10 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             self.img1 = []
             for idx in range(1, 16):
                 self.img1 += [cv2.imread(f'Dataset/Q1_Image/{idx}.bmp')]
+
+            self.img2 = []
+            for idx in range(1, 6):
+                self.img2 += [cv2.imread(f'Dataset/Q2_Image/{idx}.bmp')]
 
             self.img4_1 = cv2.imread('Dataset/Q4_Image/Shark1.jpg')
             self.img4_2 = cv2.imread('Dataset/Q4_Image/Shark2.jpg')
@@ -160,13 +164,68 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         cv2.waitKey(500)
         cv2.destroyWindow(win_name)
 
+    # Q 2 camera matrix
+    def get_cam_mtx(self):
+        # get camera 2 intrinsic matrix
+        pattern_size = (11, 8)
+
+        for idx in range(0, 5):
+            img = self.img2[idx]
+            is_found, corners = cv2.findChessboardCorners(img, pattern_size)
+            self.corners += [corners]
+
+        objp = np.zeros((8 * 11, 3), np.float32)
+        objp[:, :2] = np.mgrid[0:11, 0:8].T.reshape(-1, 2)
+        objpoints = [objp for _ in range(5)]  # 3d point in real world space
+        _, self.intrinsic_mtx, self.dist_coeffs, self.rvecs, self.tvecs = \
+            cv2.calibrateCamera(objpoints, self.corners, self.img2[0].shape[:-1], None, None)
+
+    def AR(self, flag):
+        word = self.text_input.text().upper()
+        if flag == 1:
+            lib_path = "Dataset/Q2_Image/alphabet_lib_onboard.txt"
+        elif flag == 2:
+            lib_path = "Dataset/Q2_Image/alphabet_lib_vertical.txt"
+
+        lib = cv2.FileStorage(lib_path, cv2.FILE_STORAGE_READ)
+        for idx in range(0, 5):
+            img = self.img2[idx].copy()
+            i = 2
+            j = 5
+            for ch in word:
+                ch_pt = lib.getNode(ch).mat()
+                ch_pt += np.array([i * 3 + 1, j, 0])  # move char
+                i -= 1
+                if i == -1:
+                    i = 2
+                    j = 2
+
+                ch_pt = ch_pt.reshape((-1, 3)).astype(float)
+
+                points, _ = cv2.projectPoints(ch_pt, self.rvecs[idx], self.tvecs[idx],
+                                              self.intrinsic_mtx, self.dist_coeffs)
+
+                points = points.reshape((-1, 2, 2)).astype(int)
+                for pt_pair in points:
+                    cv2.line(img, pt_pair[0], pt_pair[1], (0, 0, 255), 10)
+
+            win_name = f"Q 2.{flag}"
+            cv2.namedWindow(win_name, 0)
+            cv2.resizeWindow(win_name, 512, 512)
+            cv2.moveWindow(win_name, self.geometry().x() + 300, self.geometry().y())
+            cv2.imshow(win_name, img)
+            cv2.waitKey(1000)
+
+        cv2.waitKey(1000)
+        cv2.destroyWindow(win_name)
+
     # Q 2.1
     def word_lie(self):
-        pass
+        self.AR(1)
 
     # Q 2.2
     def word_stand(self):
-        pass
+        self.AR(2)
 
     # Q 3.1
     def disparity_map(self):
