@@ -117,7 +117,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         objp[:, :2] = np.mgrid[0:11, 0:8].T.reshape(-1, 2)
         objpoints = [objp for _ in range(15)]   # 3d point in real world space
 
-        ret, self.intrinsic_mtx, self.dist_coeffs, rvecs, tvecs = cv2.calibrateCamera(objpoints, self.corners,
+        ret, self.intrinsic_mtx, self.dist_coeffs, self.rvecs, self.tvecs = cv2.calibrateCamera(objpoints, self.corners,
                                                                                       self.img1[0].shape[:-1], None, None)
 
         print("Q 1_2 intrinsic matrix:")
@@ -126,8 +126,19 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
     # Q 1.3
     def find_extrinsic(self):
-        pass
-    
+        try:
+            assert 0 < int(self.img_idx.text()) <= 15
+            idx = int(self.img_idx.text()) - 1
+
+            R, _ = cv2.Rodrigues(self.rvecs[idx])
+            result = np.append(R, self.tvecs[idx], axis=1)
+            print(f"Q 1_3 extrinsic matrix of image {idx + 1}")
+            print(result)
+            print("------------------------------------------------\n")
+
+        except AssertionError:
+            print("Image index need to be 0 ~ 15")
+
     # Q 1.4
     def find_distortion(self):
         print("Q 1_4 distortion matrix:")

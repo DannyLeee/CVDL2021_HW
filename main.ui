@@ -199,7 +199,7 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="lineEdit"/>
+              <widget class="QLineEdit" name="img_idx"/>
              </item>
              <item>
               <widget class="QPushButton" name="Q1_3">
