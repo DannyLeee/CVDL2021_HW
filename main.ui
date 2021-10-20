@@ -199,7 +199,14 @@
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="img_idx"/>
+              <widget class="QSpinBox" name="img_idx">
+               <property name="minimum">
+                <number>1</number>
+               </property>
+               <property name="maximum">
+                <number>15</number>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QPushButton" name="Q1_3">

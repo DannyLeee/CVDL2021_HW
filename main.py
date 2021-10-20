@@ -125,18 +125,13 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
     # Q 1.3
     def find_extrinsic(self):
-        try:
-            assert 0 < int(self.img_idx.text()) <= 15
-            idx = int(self.img_idx.text()) - 1
+        idx = self.img_idx.value() - 1
 
-            R, _ = cv2.Rodrigues(self.rvecs[idx])
-            result = np.append(R, self.tvecs[idx], axis=1)
-            print(f"Q 1.3 extrinsic matrix of image {idx + 1}")
-            print(result)
-            print("------------------------------------------------\n")
-
-        except AssertionError:
-            print("Error: Image index need to be 0 ~ 15!")
+        R, _ = cv2.Rodrigues(self.rvecs[idx])
+        result = np.append(R, self.tvecs[idx], axis=1)
+        print(f"Q 1.3 extrinsic matrix of image {idx + 1}")
+        print(result)
+        print("------------------------------------------------\n")
 
     # Q 1.4
     def find_distortion(self):
