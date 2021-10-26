@@ -303,45 +303,51 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
         # 使用KNN，從兩組Local features中兩兩最近似的成對放置為一組（K參數=2）。
         # matches為稍後要放置符合要求的keypoints陣列。
-        rawMatches = matcher.knnMatch(self.feature_2, self.feature_1, 2)
+        rawMatches = matcher.knnMatch(self.feature_1, self.feature_2, 2)
 
         # 逐一取出已配對的keypoints，若距離差異小於0.8倍，則認定為符合的關鍵點
         # 放入matches陣列，此方式稱為David Lowe’s ratio test，可排除掉不適合的match。（一般建議為0.7~0.8倍）
         matches = []
+        good_and_second_good_match_list = []
         for m in rawMatches:
-            if len(m) == 2 and m[0].distance < m[1].distance * 0.8:
+            if m[0].distance < m[1].distance * 0.85:
                 matches.append((m[0].trainIdx, m[0].queryIdx))
+                good_and_second_good_match_list.append(m)
 
+        good_match_arr = np.asarray(good_and_second_good_match_list)[:, 0]
         self.matches = matches
 
-        # 將first圖和second圖放置於同一張。
-        (hA, wA) = self.img4_2.shape[:2]
-        (hB, wB) = self.img4_1.shape[:2]
-        vis = np.zeros((max(hA, hB), wA + wB, 3), dtype="uint8")
-        vis[0:hA, 0:wA] = self.img4_2
-        vis[0:hB, wA:] = self.img4_1
+        # # 將first圖和second圖放置於同一張。
+        # (hA, wA) = self.img4_2.shape[:2]
+        # (hB, wB) = self.img4_1.shape[:2]
+        # vis = np.zeros((max(hA, hB), wA + wB, 3), dtype="uint8")
+        # vis[0:hA, 0:wA] = self.img4_2
+        # vis[0:hB, wA:] = self.img4_1
+        #
+        # # 繪製所有放置於matches陣列中，兩點的直線
+        # for (trainIdx, queryIdx) in matches:
+        #
+        #     ptA = (int(self.kps_2[queryIdx].pt[0]), int(self.kps_2[queryIdx].pt[1]))
+        #     ptB = (int(self.kps_1[trainIdx].pt[0] + wA), int(self.kps_1[trainIdx].pt[1]))
+        #
+        #     cv2.line(vis, ptA, ptB, 256, 1)
 
-        # 繪製所有放置於matches陣列中，兩點的直線
-        for (trainIdx, queryIdx) in matches:
-
-            ptA = (int(self.kps_2[queryIdx].pt[0]), int(self.kps_2[queryIdx].pt[1]))
-            ptB = (int(self.kps_1[trainIdx].pt[0] + wA), int(self.kps_1[trainIdx].pt[1]))
-
-            cv2.line(vis, ptA, ptB, 256, 1)
+        vis = cv2.drawMatchesKnn(self.img4_1, self.kps_1, self.img4_2, self.kps_2,
+                                good_and_second_good_match_list, None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 
         cv2.imshow("Q 4.2", vis)
 
     # Q 4.3
     def warp(self):
-        # ref:https://blog.csdn.net/qq_36387683/article/details/98446442
+        # ref: https://blog.csdn.net/qq_36387683/article/details/98446442
 
-        (hA, wA) = self.img4_2.shape[:2]
-        (hB, wB) = self.img4_1.shape[:2]
+        (hA, wA) = self.img4_1.shape[:2]
+        (hB, wB) = self.img4_2.shape[:2]
 
-        src_pts = np.float32([self.kps_1[m[0]].pt for m in self.matches]).reshape(-1, 1, 2)
-        dst_pts = np.float32([self.kps_2[m[1]].pt for m in self.matches]).reshape(-1, 1, 2)
+        src_pts = np.float32([self.kps_1[m[1]].pt for m in self.matches])
+        dst_pts = np.float32([self.kps_2[m[0]].pt for m in self.matches])
 
-        warpPerspective_mat, _ = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
+        warpPerspective_mat, _ = cv2.findHomography(dst_pts, src_pts, cv2.RANSAC, 5.0)
         # debug_log(warpPerspective_mat)
 
         # temp = np.zeros((hA, wA+wB, 3), dtype="uint8")
@@ -349,7 +355,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
 
         temp = cv2.warpPerspective(self.img4_2, warpPerspective_mat, (wA+wB, hA))
-        temp[0:hB, 0:wB] = self.img4_1
+        temp[0:hA, 0:wA] = self.img4_1
         cv2.imshow("", temp)
         # cv2.imshow("Q 4.3", temp_)
 
