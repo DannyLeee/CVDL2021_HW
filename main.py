@@ -43,11 +43,11 @@ def SIFT_point(img):
 
     # 繪製關鍵點
     img_ = img.copy()
-    cv2.drawKeypoints(img, keypoints=keypoints[:200], outImage=img, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_OVER_OUTIMG)
+    cv2.drawKeypoints(img, keypoints=keypoints[:200], outImage=img_, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_OVER_OUTIMG)
 
     # cv2.imshow('sift_keypoints', img)
 
-    return img, keypoints, descriptor
+    return img_, keypoints, descriptor
 
 
 class Main(QMainWindow, ui.Ui_MainWindow):
@@ -240,6 +240,8 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         cv2.namedWindow(win_name, 0)
         cv2.resizeWindow(win_name, int(w/4), int(h/4))
         cv2.imshow(win_name, disparity)
+        cv2.waitKey(1250)
+        cv2.destroyWindow(win_name)
 
     def mouse_click(self, event, x, y, flag, params):
         # debug_log((event, x, y, flag, params))
@@ -271,15 +273,22 @@ class Main(QMainWindow, ui.Ui_MainWindow):
     # Q 4.1
     def find_keypoints(self):
         img, kps_1, feature_1 = SIFT_point(self.img4_1)
-        cv2.imshow("Q 4.1_1", img)
-        # Qimg = QtGui.QImage(img.data, img.shape[1], img.shape[0], QtGui.QImage.Format_RGB888).rgbSwapped()
-        # self.result.setPixmap(QtGui.QPixmap.fromImage(Qimg))
+
+        win_name_1 = "Q 4.1_1"
+        cv2.namedWindow(win_name_1, 0)
+        cv2.moveWindow(win_name_1, self.geometry().x(), self.geometry().y())
+        cv2.imshow(win_name_1, img)
 
         img, kps_2, feature_2 = SIFT_point(self.img4_2)
-        cv2.imshow("Q 4.1_2", img)
 
-        # Qimg = QtGui.QImage(img.data, img.shape[1], img.shape[0], QtGui.QImage.Format_RGB888).rgbSwapped()
-        # self.result_2.setPixmap(QtGui.QPixmap.fromImage(Qimg))
+        win_name_2 = "Q 4.1_2"
+        cv2.namedWindow(win_name_2, 0)
+        cv2.moveWindow(win_name_2, self.geometry().x() + int(self.img4_1.shape[1]), self.geometry().y())
+        cv2.imshow(win_name_2, img)
+
+        cv2.waitKey(1250)
+        cv2.destroyWindow(win_name_1)
+        cv2.destroyWindow(win_name_2)
 
         self.feature_1 = feature_1
         self.feature_2 = feature_2
@@ -308,7 +317,11 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         vis = cv2.drawMatchesKnn(self.img4_1, self.kps_1, self.img4_2, self.kps_2,
                                 matches, None, flags=cv2.DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS)
 
-        cv2.imshow("Q 4.2", vis)
+        win_name = "Q 4.2"
+        cv2.namedWindow(win_name, 0)
+        cv2.imshow(win_name, vis)
+        cv2.waitKey(1250)
+        cv2.destroyWindow(win_name)
 
     # Q 4.3
     def warp(self):
@@ -324,7 +337,12 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
         result = cv2.warpPerspective(self.img4_2, warpPerspective_mat, (wA+wB, hA))
         result[0:hA, 0:wA] = self.img4_1
-        cv2.imshow("Q 4.3", result)
+
+        win_name = "Q 4.3"
+        cv2.namedWindow(win_name, 0)
+        cv2.imshow(win_name, result)
+        cv2.waitKey(1250)
+        cv2.destroyWindow(win_name)
 
 
 if __name__ == '__main__':
