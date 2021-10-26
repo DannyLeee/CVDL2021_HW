@@ -92,7 +92,6 @@ class Main(QMainWindow, ui.Ui_MainWindow):
             # global variable
             self.corners = []   # Q1
 
-
     # Q 1.1
     def corner_detection(self):
         # col or row numbers of corners
@@ -253,7 +252,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         if event == cv2.EVENT_LBUTTONDOWN:
             debug_log(disparity)
             if disparity != -16:
-                # disparity map divided  by 16 ref. below
+                # disparity map divided by 16 ref. below
                 # ref: https://stackoverflow.com/questions/16486092/given-a-stereo-disparity-map-in-opencv-how-do-i-find-true-pixel-offsets-between
                 cv2.circle(img_R, (int(x-disparity/16), y), 5, (0, 255, 0), 10)
                 cv2.imshow("Right image", img_R)
@@ -274,10 +273,8 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         cv2.imshow(right_name, self.img3_R)
         cv2.setMouseCallback(left_name, self.mouse_click)
 
-
     # Q 4.1
     def find_keypoints(self):
-
         img, kps_1, feature_1 = SIFT_point(self.img4_1)
         cv2.imshow("Q 4.1_1", img)
         # Qimg = QtGui.QImage(img.data, img.shape[1], img.shape[0], QtGui.QImage.Format_RGB888).rgbSwapped()
@@ -297,7 +294,6 @@ class Main(QMainWindow, ui.Ui_MainWindow):
     # Q 4.2
     def keypoints_match(self):
         # ref:https://chtseng.wordpress.com/2017/05/22/%E5%9C%96%E5%83%8F%E7%89%B9%E5%BE%B5%E6%AF%94%E5%B0%8D%E4%BA%8C-%E7%89%B9%E5%BE%B5%E9%BB%9E%E6%8F%8F%E8%BF%B0%E5%8F%8A%E6%AF%94%E5%B0%8D/
-
         # DescriptorMatcher_create是用來建立一個執行特徵點匹配運算的實體。如果兩個特徵點的distance愈小，我們就認為它們愈近似。
         matcher = cv2.DescriptorMatcher_create("BruteForce")
 
