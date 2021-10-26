@@ -97,6 +97,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         # col or row numbers of corners
         pattern_size = (11, 8)
 
+        self.corners = []
         for idx in range(0, 15):
             img = self.img1[idx]
             is_found, corners = cv2.findChessboardCorners(img, pattern_size)
@@ -181,6 +182,8 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         objpoints = [objp for _ in range(5)]  # 3d point in real world space
         _, self.intrinsic_mtx, self.dist_coeffs, self.rvecs, self.tvecs = \
             cv2.calibrateCamera(objpoints, self.corners, self.img2[0].shape[:-1], None, None)
+
+        self.Q2.setText("Done")
 
     def AR(self, flag):
         word = self.text_input.text().upper()
