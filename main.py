@@ -9,10 +9,6 @@ import numpy as np
 import ui
 
 
-def debug_log(msg):
-    print(msg)
-
-
 def SIFT_point(img):
     '''
         ref: https://www.itread01.com/content/1547651741.html
@@ -126,25 +122,22 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
     # Q 1.2
     def find_intrinsic(self):
-        print("Q 1.2 intrinsic matrix:")
-        print(self.intrinsic_mtx)
-        print("------------------------------------------------\n")
+        result = f"Q 1.2 intrinsic matrix:\n{self.intrinsic_mtx}"
+        self.result.setText(result)
 
     # Q 1.3
     def find_extrinsic(self):
         idx = self.img_idx.value() - 1
-
         R, _ = cv2.Rodrigues(self.rvecs[idx])
         result = np.append(R, self.tvecs[idx], axis=1)
-        print(f"Q 1.3 extrinsic matrix of image {idx + 1}")
-        print(result)
-        print("------------------------------------------------\n")
+
+        str_result = f"Q 1.3 extrinsic matrix of image {idx + 1}\n{result}"
+        self.result.setText(str_result)
 
     # Q 1.4
     def find_distortion(self):
-        print("Q 1.4 distortion matrix:")
-        print(self.dist_coeffs)
-        print("------------------------------------------------\n")
+        result = f"Q 1.4 distortion matrix:\n{self.dist_coeffs}"
+        self.result.setText(result)
     
     # Q 1.5
     def undistorted(self):
@@ -253,7 +246,6 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         disparity = self.disparity[y][x]
         img_R = self.img3_R.copy()
         if event == cv2.EVENT_LBUTTONDOWN:
-            debug_log(disparity)
             if disparity != -16:
                 # disparity map divided by 16 ref. below
                 # ref: https://stackoverflow.com/questions/16486092/given-a-stereo-disparity-map-in-opencv-how-do-i-find-true-pixel-offsets-between
