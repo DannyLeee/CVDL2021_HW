@@ -171,7 +171,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
     def get_cam_mtx(self):
         # get camera 2 intrinsic matrix
         pattern_size = (11, 8)
-
+        self.corners = []
         for idx in range(0, 5):
             img = self.img2[idx]
             is_found, corners = cv2.findChessboardCorners(img, pattern_size)
