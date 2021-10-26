@@ -232,14 +232,14 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
     # Q 3.1
     def disparity_map(self):
-        stereo_matcher = cv2.StereoBM_create(256)
+        stereo_matcher = cv2.StereoBM_create(256, 25)
         img_L = cv2.cvtColor(self.img3_L, cv2.COLOR_BGR2GRAY)
         img_R = cv2.cvtColor(self.img3_R, cv2.COLOR_BGR2GRAY)
         h, w = img_L.shape[:2]
         disparity = stereo_matcher.compute(img_L, img_R)
+        self.disparity = disparity
 
         disparity = (disparity - disparity.min()) / (disparity.max() - disparity.min())    # min-max norm
-        self.disparity = disparity
 
         win_name = "Q 3.1"
         cv2.namedWindow(win_name, 0)
@@ -248,15 +248,15 @@ class Main(QMainWindow, ui.Ui_MainWindow):
 
     def mouse_click(self, event, x, y, flag, params):
         # debug_log((event, x, y, flag, params))
-        B = 342.789
-        f = 4019.284
-        d = 279.184 # d? not sure
+        disparity = self.disparity[y][x]
         img_R = self.img3_R.copy()
         if event == cv2.EVENT_LBUTTONDOWN:
-            debug_log((self.disparity[y][x]))
-            cv2.circle(img_R, (int(x-d*self.disparity[y][x]), y), 5, (0, 255, 0), 10)   # seems to be wrong
-            # cv2.circle(img_R, (x, y), 5, (0, 0, 255), 10)   # red point (left original point)
-            cv2.imshow("Right image", img_R)
+            debug_log(disparity)
+            if disparity != -16:
+                # disparity map divided  by 16 ref. below
+                # ref: https://stackoverflow.com/questions/16486092/given-a-stereo-disparity-map-in-opencv-how-do-i-find-true-pixel-offsets-between
+                cv2.circle(img_R, (int(x-disparity/16), y), 5, (0, 255, 0), 10)
+                cv2.imshow("Right image", img_R)
 
     # Q 3.2
     def disparity_match(self):
