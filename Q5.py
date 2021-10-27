@@ -1,6 +1,7 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import *
 
+import pickle
 import torch
 import torch.nn as nn
 from pytorch_model_summary import summary
@@ -36,9 +37,6 @@ class Main(QMainWindow, Q5_ui.Ui_MainWindow):
             if flag == 10:
                 break
 
-        label_ls = ["airplane", "automobile", "bird", "cat",
-                    "deer", "dog", "frog", "horse", "ship"]
-
         plt.figure(1)
         for i, idx in enumerate(id_ls[:-1]):
             plt.subplot(3, 3, i + 1)
@@ -60,10 +58,48 @@ class Main(QMainWindow, Q5_ui.Ui_MainWindow):
         self.result.setText(result)
 
     def show_curve(self):
-        pass
+        plt.figure()
+        plt.subplot(1, 2, 1)
+        plt.title("Loss")
+        plt.ylabel("loss")
+        plt.xlabel("epoch")
+        plt.plot(epoch_loss)
+
+        plt.subplot(1, 2, 2)
+        plt.title("Accuracy")
+        plt.ylabel("Acc (%)")
+        plt.xlabel("epoch")
+        plt.plot(epoch_acc)
+
+        plt.show()
 
     def test(self):
-        pass
+        idx = self.img_index.value() - 1
+        img = test_set[idx][0]
+
+        with torch.no_grad():
+            logits = model(img.unsqueeze(0))
+            softmax = nn.Softmax()
+            logits = softmax(logits)
+            logits = logits.squeeze()
+
+        plt.figure()
+        plt.subplot(1, 2, 1)
+        plt.title("Test Image")
+        plt.axis("off")
+        img = img.transpose(0, 1).transpose(1, 2)
+        imshow(img)
+
+        plt.subplot(1, 2, 2)
+
+        plt.title("Logits")
+        plt.xlabel("classes")
+        plt.ylabel("Probability")
+        plt.ylim([0.0, 1.0])
+        plt.xticks(range(10), label_ls)
+        plt.bar(range(10), logits)
+
+        plt.show()
 
 
 # model from torchvision
@@ -85,7 +121,11 @@ EPOCH = 50
 LR = 1e-3
 MOMENTUM = 0.9
 
+# model and label
+label_ls = ["airplane", "automobile", "bird", "cat", "deer",
+            "dog", "frog", "horse", "ship", "truck"]
 model = VGG_w_cls()
+model.load_state_dict(torch.load(f"model/e_25", map_location=torch.device('cpu')))
 
 # Dataset from torchvision
 to_tensor = transforms.ToTensor()
@@ -94,6 +134,13 @@ test_set = CIFAR10("Dataset/Q5", train=False, transform=to_tensor)
 
 # optimizer and loss function
 optimizer = torch.optim.SGD(model.parameters(), lr=LR, momentum=MOMENTUM)
+
+# curve
+with open('model/epoch_loss.pkl', 'rb') as fp:
+    epoch_loss = pickle.load(fp)
+with open('model/epoch_acc.pkl', 'rb') as fp:
+    epoch_acc = pickle.load(fp)
+
 
 if __name__ == '__main__':
     import sys
