@@ -136,7 +136,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "CVDL HW1"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "CVDL HW1 Q1~4"))
         self.groupBox_14.setTitle(_translate("MainWindow", "3. Stereo"))
         self.Q3_1.setText(_translate("MainWindow", "3.1 Stereo Disparity Map"))
         self.Q3_2.setText(_translate("MainWindow", "3.2 Stereo Disparity Maatch"))
