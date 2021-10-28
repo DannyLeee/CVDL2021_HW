@@ -58,7 +58,7 @@ class Main(QMainWindow, Q5_ui.Ui_MainWindow):
         self.result.setText(result)
 
     def show_curve(self):
-        plt.figure()
+        plt.figure(figsize=(10, 5))
         plt.subplot(1, 2, 1)
         plt.title("Loss")
         plt.ylabel("loss")
@@ -83,7 +83,7 @@ class Main(QMainWindow, Q5_ui.Ui_MainWindow):
             logits = softmax(logits)
             logits = logits.squeeze()
 
-        plt.figure()
+        plt.figure(figsize=(15, 5))
         plt.subplot(1, 2, 1)
         plt.title("Test Image")
         plt.axis("off")
@@ -122,7 +122,7 @@ LR = 1e-3
 MOMENTUM = 0.9
 
 # model and label
-label_ls = ["airplane", "automobile", "bird", "cat", "deer",
+label_ls = ["airplane", "car", "bird", "cat", "deer",
             "dog", "frog", "horse", "ship", "truck"]
 model = VGG_w_cls()
 model.load_state_dict(torch.load(f"model/e_25", map_location=torch.device('cpu')))
