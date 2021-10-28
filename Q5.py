@@ -117,7 +117,7 @@ class VGG_w_cls(nn.Module):
 
 # hyper-parameter
 BATCH_SIZE = 64
-EPOCH = 50
+EPOCH = 25
 LR = 1e-3
 MOMENTUM = 0.9
 
