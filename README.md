@@ -1,4 +1,4 @@
-# CVPL2021_HW1
+# CVDL2021_HW1
 ## Introduction
 * This is the Computer Vision and Deep Learning HW1.
 * Exercise of the opencv and VGG net.
