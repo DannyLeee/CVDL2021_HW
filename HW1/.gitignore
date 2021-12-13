@@ -1,0 +1,8 @@
+*.pdf
+*.pptx
+/Dataset
+*.sh
+__pycache__/
+/model/
+/doc/
+*.zip
