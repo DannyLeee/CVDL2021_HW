@@ -39,7 +39,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
         n_comp = 25
         x_hat = np.dot(pca.transform(x)[:, :n_comp], pca.components_[:n_comp, :])
         x_hat += mu
-        x_hat = x_hat.reshape(30, 400, 400, 3)
+        x_hat = x_hat.reshape(30, 400, 400, 3).astype(int)
 
         plt.figure(1)
         for idx, img in enumerate(self.Q4_img):
@@ -55,7 +55,7 @@ class Main(QMainWindow, ui.Ui_MainWindow):
                 plt.ylabel('reconstruction')
             else:
                 plt.axis("off")
-            imshow(x_hat[idx].astype(int)[:, :, ::-1])
+            imshow(x_hat[idx][:, :, ::-1])
         plt.show()
 
 
